@@ -22,7 +22,7 @@
 
 > I plan on making heavy use of the Marvel Comics API. It is a rich resource for information about heroes as well as issues of Marvel’s series of comics. The API also offers reference to a good library of great images of heroes and comic covers. 
 
-Users will also be defining data as they will add comics to their reading list and track which ones they’ve read. 
+> Users will also be defining data as they will add comics to their reading list and track which ones they’ve read. 
 
 7. In brief, outline your approach to creating your project (knowing that you may not know everything in advance and that these details might change later). Answer questions like the ones below, but feel free to add more information: 
 
