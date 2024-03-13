@@ -8,6 +8,8 @@ const {BadRequestError, NotFoundError} = require("../expressError");
 
 class Character {
   /** Create a character (from data), update db, return new character data.
+   * 
+   * This model isn't used in a route, its just used to seed the database.
    *
    * data should be { id, name, description, imageURL, imageType }
    *
@@ -74,7 +76,7 @@ class Character {
                 image_type AS "imageType"
         FROM characters
         WHERE id =$1`,
-        [username],
+        [id],
     )
 
     const character = result.rows[0];

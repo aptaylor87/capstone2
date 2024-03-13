@@ -5,8 +5,7 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
-  ensureAdmin,
-  ensureCorrectUserOrAdmin,
+  ensureCorrectUser,
 } = require("./auth");
 
 
@@ -83,7 +82,7 @@ describe("ensureLoggedIn", function () {
 
 
 
-describe("ensureCorrectUserOrAdmin", function () {
+describe("ensureCorrectUser", function () {
   test("works: same user", function () {
     expect.assertions(1);
     const req = { params: { username: "test" } };
@@ -91,7 +90,7 @@ describe("ensureCorrectUserOrAdmin", function () {
     const next = function (err) {
       expect(err).toBeFalsy();
     };
-    ensureCorrectUserOrAdmin(req, res, next);
+    ensureCorrectUser(req, res, next);
   });
 
   test("unauth: mismatch", function () {
@@ -101,7 +100,7 @@ describe("ensureCorrectUserOrAdmin", function () {
     const next = function (err) {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };
-    ensureCorrectUserOrAdmin(req, res, next);
+    ensureCorrectUser(req, res, next);
   });
 
   test("unauth: if anon", function () {
@@ -111,6 +110,6 @@ describe("ensureCorrectUserOrAdmin", function () {
     const next = function (err) {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };
-    ensureCorrectUserOrAdmin(req, res, next);
+    ensureCorrectUser(req, res, next);
   });
 });

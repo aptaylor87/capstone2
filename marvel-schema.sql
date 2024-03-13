@@ -21,12 +21,12 @@ CREATE TABLE comics (
     description TEXT,
     image_url TEXT,
     image_type TEXT,
-    marvel_URL TEXT  -- corrected the syntax here
+    marvel_URL TEXT  
 );
 
 CREATE TABLE reading_lists (
     username VARCHAR(25) REFERENCES users ON DELETE CASCADE,
     comic_id INTEGER REFERENCES comics ON DELETE CASCADE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    date_read DATE
 );
 

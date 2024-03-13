@@ -28,7 +28,7 @@ class User {
                   password,
                   first_name AS "firstName",
                   last_name AS "lastName",
-                  email,
+                  email 
            FROM users
            WHERE username = $1`,
         [username],
@@ -95,7 +95,7 @@ class User {
 
   /** Find all users.
    *
-   * Returns [{ username, first_name, last_name, email, is_admin }, ...]
+   * Returns [{ username, first_name, last_name, email }, ...]
    **/
 
   static async findAll() {
@@ -103,8 +103,7 @@ class User {
           `SELECT username,
                   first_name AS "firstName",
                   last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
+                  email
            FROM users
            ORDER BY username`,
     );
@@ -114,8 +113,8 @@ class User {
 
   /** Given a username, return data about user.
    *
-   * Returns { username, firstName, lastName, email jobs }
-   *   where comics is { id, title, company_handle, company_name, state }
+   * Returns { username, firstName, lastName, email, comics }
+   *   where comics is { id }
    *
    * Throws NotFoundError if user not found.
    **/
@@ -140,9 +139,42 @@ class User {
            FROM reading_lists AS r
            WHERE r.username = $1`, [username]);
 
-    user.readingList = userReadingList.rows.map(r => r.comic_id);
+    user.comics = userReadingList.rows.map(r => r.comic_id);
     return user;
   }
+
+  
+
+  /** Add comic to user's reading list: update db, returns undefined.
+   *
+   * - username: username of owner of reading list
+   * - comic ID
+   **/
+
+  static async addToReadingList(username, comicID) {
+    const preCheck = await db.query(
+          `SELECT id
+           FROM comics
+           WHERE id = $1`, [comicID]);
+    const comic = preCheck.rows[0];
+
+    if (!comic) throw new NotFoundError(`No comic: ${comicID}`);
+
+    const preCheck2 = await db.query(
+          `SELECT username
+           FROM users
+           WHERE username = $1`, [username]);
+    const user = preCheck2.rows[0];
+
+    if (!user) throw new NotFoundError(`No username: ${username}`);
+
+    await db.query(
+          `INSERT INTO reading_lists (username, comic_id)
+           VALUES ($1, $2)
+           RETURNING username, comic_id`,
+        [username, comicID]);
+  }
+
 
   /** Delete given user from database; returns undefined. */
 
@@ -157,35 +189,6 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
-  }
-
-  /** Apply for job: update db, returns undefined.
-   *
-   * - username: username applying for job
-   * - jobId: job id
-   **/
-
-  static async addToReadingList(username, comicID) {
-    const preCheck = await db.query(
-          `SELECT id
-           FROM comics
-           WHERE id = $1`, [comicID]);
-    const comic = preCheck.rows[0];
-
-    if (!comic) throw new NotFoundError(`No job: ${jobId}`);
-
-    const preCheck2 = await db.query(
-          `SELECT username
-           FROM users
-           WHERE username = $1`, [username]);
-    const user = preCheck2.rows[0];
-
-    if (!user) throw new NotFoundError(`No username: ${username}`);
-
-    await db.query(
-          `INSERT INTO applications (job_id, username)
-           VALUES ($1, $2)`,
-        [jobId, username]);
   }
 }
 
