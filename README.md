@@ -15,6 +15,7 @@ React Marvel Team-up Backend is the server-side component of the React Marvel Te
 - **Colors**: Library for adding color to console output.
 - **Morgan**: HTTP request logger middleware for Node.js.
 - **Jsonschema**: JSON schema validator.
+- **Axios**: For making HTTP requests from Node.js or the browser, providing a simple and intuitive API.
 
 
 ## Database Setup
@@ -24,9 +25,15 @@ React Marvel Team-up Backend is the server-side component of the React Marvel Te
 
 1. Install PostgreSQL if not already installed.
 
-2. Create a new database for Jobly.
+2. Create a new database for marvel app. Create a test database.
 
 3. Update the `.env` file with the database connection details.
+
+4. Sign up for developer account with Marvel and get private and public keys. 
+
+5. Run the marvel.sql file in psql. 
+
+6. Run getCharactersForDB in the marvelAPI.js file under helpers to seed the DB with character data. 
 
 
 ## API Endpoints
