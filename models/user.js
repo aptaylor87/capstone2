@@ -2,14 +2,15 @@
 
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+const {sqlForPartialUpdate} = require("../helpers/sql");
+const {getComic} = require("../helpers/marvelAPI.js");
 const {
   NotFoundError,
   BadRequestError,
   UnauthorizedError,
 } = require("../expressError");
 
-const { BCRYPT_WORK_FACTOR } = require("../config.js");
+const {BCRYPT_WORK_FACTOR} = require("../config.js");
 
 /** Related functions for users. */
 
@@ -24,14 +25,14 @@ class User {
   static async authenticate(username, password) {
     // try to find the user first
     const result = await db.query(
-          `SELECT username,
+      `SELECT username,
                   password,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email 
            FROM users
            WHERE username = $1`,
-        [username],
+      [username]
     );
 
     const user = result.rows[0];
@@ -55,13 +56,12 @@ class User {
    * Throws BadRequestError on duplicates.
    **/
 
-  static async register(
-      { username, password, firstName, lastName, email }) {
+  static async register({username, password, firstName, lastName, email}) {
     const duplicateCheck = await db.query(
-          `SELECT username
+      `SELECT username
            FROM users
            WHERE username = $1`,
-        [username],
+      [username]
     );
 
     if (duplicateCheck.rows[0]) {
@@ -71,7 +71,7 @@ class User {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
-          `INSERT INTO users
+      `INSERT INTO users
            (username,
             password,
             first_name,
@@ -79,13 +79,7 @@ class User {
             email)
            VALUES ($1, $2, $3, $4, $5)
            RETURNING username, first_name AS "firstName", last_name AS "lastName", email`,
-        [
-          username,
-          hashedPassword,
-          firstName,
-          lastName,
-          email,
-        ],
+      [username, hashedPassword, firstName, lastName, email]
     );
 
     const user = result.rows[0];
@@ -100,12 +94,12 @@ class User {
 
   static async findAll() {
     const result = await db.query(
-          `SELECT username,
+      `SELECT username,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email
            FROM users
-           ORDER BY username`,
+           ORDER BY username`
     );
 
     return result.rows;
@@ -121,13 +115,13 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-          `SELECT username,
+      `SELECT username,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email
            FROM users
            WHERE username = $1`,
-        [username],
+      [username]
     );
 
     const user = userRes.rows[0];
@@ -135,15 +129,15 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
     const userReadingList = await db.query(
-          `SELECT r.comic_id
+      `SELECT r.comic_id
            FROM reading_lists AS r
-           WHERE r.username = $1`, [username]);
+           WHERE r.username = $1`,
+      [username]
+    );
 
-    user.comics = userReadingList.rows.map(r => r.comic_id);
+    user.comics = userReadingList.rows.map((r) => r.comic_id);
     return user;
   }
-
-  
 
   /** Add comic to user's reading list: update db, returns undefined.
    *
@@ -152,45 +146,62 @@ class User {
    **/
 
   static async addToReadingList(username, comicID) {
+    console.log(`adding  ${comicID}`)
     const preCheck = await db.query(
-          `SELECT id
+      `SELECT id
            FROM comics
-           WHERE id = $1`, [comicID]);
+           WHERE id = $1`,
+      [comicID]
+    );
     const comic = preCheck.rows[0];
 
-    if (!comic) throw new NotFoundError(`No comic: ${comicID}`);
+    if (!comic) {
+
+      await getComic(comicID);
+      
+    }
+    const postCheck = await db.query(
+      `SELECT id
+       FROM comics
+       WHERE id = $1`,
+      [comicID]
+    );
+    const comicRetry = postCheck.rows[0];
+
+    if (!comicRetry) throw new NotFoundError(`unable to add comic: ${comicID}`);
 
     const preCheck2 = await db.query(
-          `SELECT username
+      `SELECT username
            FROM users
-           WHERE username = $1`, [username]);
+           WHERE username = $1`,
+      [username]
+    );
     const user = preCheck2.rows[0];
 
     if (!user) throw new NotFoundError(`No username: ${username}`);
 
     await db.query(
-          `INSERT INTO reading_lists (username, comic_id)
+      `INSERT INTO reading_lists (username, comic_id)
            VALUES ($1, $2)
            RETURNING username, comic_id`,
-        [username, comicID]);
+      [username, comicID]
+    );
   }
-
 
   /** Delete given user from database; returns undefined. */
 
   static async remove(username) {
     let result = await db.query(
-          `DELETE
+      `DELETE
            FROM users
            WHERE username = $1
            RETURNING username`,
-        [username],
+      [username]
     );
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 }
-
 
 module.exports = User;

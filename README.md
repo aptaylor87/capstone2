@@ -20,7 +20,7 @@ React Marvel Team-up Backend is the server-side component of the React Marvel Te
 
 ## Database Setup
 
-- The Marval api can be found [here](https://developer.marvel.com/)
+- The Marvel API can be found [here](https://developer.marvel.com/)
 - A diagram of the schema for the database can be found [here](https://app.quickdatabasediagrams.com/#/d/6FJbjZ)
 
 1. Install PostgreSQL if not already installed.
@@ -56,7 +56,7 @@ React Marvel Team-up Backend is the server-side component of the React Marvel Te
 
   
 
-### Characters WIP
+### Characters
   
 
 - #### GET /characters
@@ -72,7 +72,7 @@ React Marvel Team-up Backend is the server-side component of the React Marvel Te
 
   
 
-### Comics WIP
+### Comics
 
 
 - #### GET /comics/username

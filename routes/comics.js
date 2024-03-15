@@ -1,6 +1,6 @@
 "use strict";
 
-/** Routes for jobs. */
+/** Routes for comics. */
 
 const express = require("express");
 const Comic = require("../models/comic");

@@ -25,8 +25,11 @@ CREATE TABLE comics (
 );
 
 CREATE TABLE reading_lists (
-    username VARCHAR(25) REFERENCES users ON DELETE CASCADE,
-    comic_id INTEGER REFERENCES comics ON DELETE CASCADE,
-    date_read DATE
+    username VARCHAR(25),
+    comic_id INTEGER,
+    date_read DATE,
+    PRIMARY KEY (username, comic_id),
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
+    FOREIGN KEY (comic_id) REFERENCES comics(id) ON DELETE CASCADE
 );
 

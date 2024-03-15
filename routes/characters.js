@@ -1,6 +1,6 @@
 "use strict";
 
-/** Routes for companies. */
+/** Routes for characters. */
 
 const express = require("express");
 
