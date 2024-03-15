@@ -4,6 +4,8 @@
 
 React Marvel Team-up Backend is the server-side component of the React Marvel Teamup application, responsible for handling data storage, authentication, and API endpoints.
 
+See the deployed application [here](https://react-marvel-backend.onrender.com/)
+
 ## Technologies Used **REVIEW**
 
 - **Express**: Fast, unopinionated, minimalist web framework for Node.js.
